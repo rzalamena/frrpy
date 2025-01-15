@@ -9,7 +9,29 @@ STATICD_ROOT_XPATH = \
 
 
 class StaticRouteNextHop:
-    "Represents a next hop in a static route."
+    """
+    Represents a next hop in a static route.
+
+    Attributes:
+        TYPE_IFINDEX (str): Type for interface index.
+        TYPE_IPV4 (str): Type for IPv4 address.
+        TYPE_IPV4_IFINDEX (str): Type for IPv4 address with interface index.
+        TYPE_IPV6 (str): Type for IPv6 address.
+        TYPE_IPV6_IFINDEX (str): Type for IPv6 address with interface index.
+        TYPE_BLACKHOLE (str): Type for blackhole route.
+
+    Args:
+        type (str): The type of the next hop.
+        vrf (str): The VRF (Virtual Routing and Forwarding) instance.
+        gateway (str, optional): The gateway address. Defaults to ''.
+        interface (str, optional): The interface name. Defaults to ''.
+        table (int, optional): The table ID. Defaults to 0.
+        metric (int, optional): The metric value. Defaults to 1.
+        distance (int, optional): The distance value. Defaults to 1.
+
+    Methods:
+        __repr__(): Returns a string representation of the next hop.
+    """
     TYPE_IFINDEX = 'ifindex'
     TYPE_IPV4 = 'ip4'
     TYPE_IPV4_IFINDEX = 'ip4-ifindex'
@@ -31,7 +53,30 @@ class StaticRouteNextHop:
 
 
 class StaticRoute:
-    "Represents a static route in FRR."
+    """
+    Represents a static route in FRR.
+
+    Attributes:
+        AFI_SAFI_IPV4_UNICAST (str): Address Family Identifier (AFI) and Subsequent Address Family Identifier (SAFI) for IPv4 unicast.
+        AFI_SAFI_IPV6_UNICAST (str): Address Family Identifier (AFI) and Subsequent Address Family Identifier (SAFI) for IPv6 unicast.
+        vrf (str): The VRF (Virtual Routing and Forwarding) instance.
+        prefix (str): The prefix of the static route.
+        afi_safi (str): The AFI-SAFI type of the static route.
+        next_hops (list): A list of next hops for the static route.
+
+    Args:
+        prefix (str): The prefix of the static route.
+        vrf (str, optional): The VRF instance. Defaults to 'default'.
+
+    Methods:
+        __repr__(): Returns a string representation of the static route.
+        add_next_hop_interface(interface): Adds a next hop by interface.
+        add_next_hop_ip(gateway): Adds a next hop by IP address.
+        add_next_hop_ip_interface(gateway, interface): Adds a next hop by IP address and interface.
+        _next_hop_to_xpath(next_hop): Generates an XPath for a given next hop.
+        to_xpath(): Generates a list of XPath expressions for the static route.
+    """
+
     AFI_SAFI_IPV4_UNICAST = 'frr-routing:ipv4-unicast'
     AFI_SAFI_IPV6_UNICAST = 'frr-routing:ipv6-unicast'
 
