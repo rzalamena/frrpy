@@ -13,6 +13,7 @@ try:
     from grpc._utilities import first_version_is_lower
     _version_not_supported = first_version_is_lower(GRPC_VERSION, GRPC_GENERATED_VERSION)
 except ImportError:
+    first_version_is_lower = lambda v1, v2: False
     _version_not_supported = True
 
 if _version_not_supported:
