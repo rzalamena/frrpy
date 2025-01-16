@@ -1,6 +1,7 @@
 from frrpy.connection import FrrConnection
 from frrpy.staticd import StaticRoute
 import frrpy.staticd
+import time
 
 connection = FrrConnection()
 
@@ -17,15 +18,21 @@ prefix_list = [
     '10.254.254.10/32',
 ]
 
+# Install routes
 route_list = []
 for prefix in prefix_list:
     route = StaticRoute(prefix)
     route.add_next_hop_interface('lo')
     route_list.append(route)
 
-connection.commit(route_list)
+connection.commit({'update': route_list})
+time.sleep(1)
 
-# Find missing routes
+
+# Delete all configured routes
 routes = frrpy.staticd.load_routes(connection)
+prefixes = []
 for route in routes:
-    print(route)
+    prefixes.append(route.prefix)
+
+connection.commit({'delete': route_list})
