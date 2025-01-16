@@ -4,12 +4,11 @@ import frrpy.frr_northbound_pb2
 import frrpy.frr_northbound_pb2_grpc
 
 
-def flat_xpaths(xpaths):
+def flat_xpaths(xpaths, delete=False):
     flat_list = []
 
     for entry in xpaths:
-        print(entry)
-        xpath = entry.to_xpath()
+        xpath = entry.to_xpath(delete=delete)
         if type(xpath) is list:
             flat_list.extend(xpath)
         else:
@@ -48,10 +47,19 @@ class FrrConnection:
 
         edit_request = frrpy.frr_northbound_pb2.EditCandidateRequest()
         edit_request.candidate_id = new_candidate.candidate_id
-        print(xpaths)
-        xpaths = flat_xpaths(xpaths)
-        for xpath in xpaths:
-            edit_request.update.append(xpath)
+
+        try:
+            update_xpaths = flat_xpaths(xpaths['update'])
+            edit_request.update.extend(update_xpaths)
+        except KeyError:
+            pass
+
+        try:
+            delete_xpaths = flat_xpaths(xpaths['delete'], True)
+            edit_request.delete.extend(delete_xpaths)
+        except KeyError:
+            pass
+
         self.stub.EditCandidate(edit_request)
 
         commit_request = frrpy.frr_northbound_pb2.CommitRequest()

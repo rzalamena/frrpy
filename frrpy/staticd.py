@@ -90,15 +90,20 @@ class StaticRoute:
         return f"/path-list[table-id='{next_hop.table}'][metric='{next_hop.metric}'][distance='{next_hop.distance}']" + \
             f"/frr-nexthops/nexthop[nh-type='{next_hop.type}'][vrf='{next_hop.vrf}'][gateway='{next_hop.gateway}'][interface='{next_hop.interface}']"
 
-    def to_xpath(self):
+    def to_xpath(self, delete=False):
         xpath_base = STATICD_ROOT_XPATH.format(self.vrf) + \
             f"/frr-staticd:staticd/route-list[prefix='{self.prefix}'][afi-safi='{self.afi_safi}']"
 
         xpaths = []
-        for next_hop in self.next_hops:
+        if delete:
             path = frrpy.frr_northbound_pb2.PathValue()
-            path.path = (xpath_base + self._next_hop_to_xpath(next_hop))
+            path.path = xpath_base
             xpaths.append(path)
+        else:
+            for next_hop in self.next_hops:
+                path = frrpy.frr_northbound_pb2.PathValue()
+                path.path = (xpath_base + self._next_hop_to_xpath(next_hop))
+                xpaths.append(path)
 
         return xpaths
 
